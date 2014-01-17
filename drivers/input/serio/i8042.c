@@ -1543,6 +1543,10 @@ static int i8042_probe(struct platform_device *dev)
 {
 	int error;
 
+#ifdef CONFIG_SERIO_I8042_DT
+	i8042_platform_device = dev;
+#endif
+
 	if (i8042_reset == I8042_RESET_ALWAYS) {
 		error = i8042_controller_selftest();
 		if (error)
@@ -1593,12 +1597,18 @@ static int i8042_remove(struct platform_device *dev)
 	return 0;
 }
 
+static struct of_device_id i8042_dt_ids[] = {
+	{ .compatible = "intel,8042" },
+	{ /* Sentinel */ },
+};
+
 static struct platform_driver i8042_driver = {
 	.driver		= {
 		.name	= "i8042",
 #ifdef CONFIG_PM
 		.pm	= &i8042_pm_ops,
 #endif
+		.of_match_table = i8042_dt_ids,
 	},
 	.probe		= i8042_probe,
 	.remove		= i8042_remove,
@@ -1630,6 +1640,7 @@ static int __init i8042_init(void)
 	if (err)
 		goto err_platform_exit;
 
+#ifndef CONFIG_SERIO_I8042_DT
 	i8042_platform_device = platform_device_alloc("i8042", -1);
 	if (!i8042_platform_device) {
 		err = -ENOMEM;
@@ -1639,16 +1650,19 @@ static int __init i8042_init(void)
 	err = platform_device_add(i8042_platform_device);
 	if (err)
 		goto err_free_device;
+#endif
 
 	bus_register_notifier(&serio_bus, &i8042_kbd_bind_notifier_block);
 	panic_blink = i8042_panic_blink;
 
 	return 0;
 
+#ifndef CONFIG_SERIO_I8042_DT
 err_free_device:
 	platform_device_put(i8042_platform_device);
 err_unregister_driver:
 	platform_driver_unregister(&i8042_driver);
+#endif
  err_platform_exit:
 	i8042_platform_exit();
 	return err;
