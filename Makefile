@@ -5,7 +5,7 @@ KERNEL_OPTS = \
 MIRROR = http://deb.debian.org/debian
 DEBOOTSTRAP_OPTS = \
 	--arch armel \
-	--include systemd-sysf,sudo,firmware-misc-nonfree,isc-dhcp-client,wpasupplicant,ifupdown,udev \
+	--include systemd-sysf,sudo,gpiod,firmware-misc-nonfree,isc-dhcp-client,wpasupplicant,ifupdown,udev \
 	--components main,contrib,non-free \
 	--variant minbase
 SUITE = testing

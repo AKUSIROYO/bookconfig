@@ -1,0 +1,2 @@
+[Service]
+ExecStart=gpioset -msignal gpiochip0 2=1
