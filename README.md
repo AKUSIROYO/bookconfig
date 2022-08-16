@@ -8,7 +8,7 @@ You gotta make two partitions on an SD card and extract them and stuff.
 TODO: Look up what the partitions ought to be and document them here.
 Or maybe write a script that does it.
 
-I build this on Ubuntu trusty, and I have the following packages installed for this:
+I build this on Debian unstable, and I have the following packages installed for this:
 * bc
 * gcc-arm-linux-gnueabi
 * u-boot-tools
