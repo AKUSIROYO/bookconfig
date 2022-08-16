@@ -52,6 +52,6 @@ debs.tar:
 	fakeroot debootstrap $(DEBOOTSTRAP_OPTS) --make-tarball $@ $(SUITE) tmp $(MIRROR)
 
 libeatmydata1.deb:
-	wget -O $@ $(MIRROR)/pool/main/libe/libeatmydata/libeatmydata1_105-2_armel.deb
+	wget -O $@ $(MIRROR)/pool/main/libe/libeatmydata/libeatmydata1_105-9_armel.deb
 
 .PHONY: all menuconfig
