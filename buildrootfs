@@ -13,7 +13,6 @@ chmod 755 tmp/sbin/init
 dpkg-deb --fsys-tarfile libeatmydata1.deb | tar -x -C tmp ./usr/lib/arm-linux-gnueabi/libeatmydata.so.1.1.2
 
 cp -r ship/* tmp
-chmod 600 tmp/etc/wpa_supplicant/wpa_supplicant.conf
 
 tar -czf "$1" -C tmp .
 rm -rf tmp
