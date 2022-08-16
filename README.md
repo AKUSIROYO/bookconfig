@@ -9,9 +9,16 @@ TODO: Look up what the partitions ought to be and document them here.
 Or maybe write a script that does it.
 
 I build this on Debian unstable, and I have the following packages installed for this:
+* make
 * bc
+* bison
+* flex
+* gcc
+* libssl-dev
 * gcc-arm-linux-gnueabi
 * u-boot-tools
+* zip
+* fakeroot
 * debian-archive-keyring
 * debootstrap
 
