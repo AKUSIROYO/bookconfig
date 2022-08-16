@@ -3,10 +3,10 @@ umask 022
 
 /usr/sbin/debootstrap --foreign $DEBOOTSTRAP_OPTS --unpack-tarball "$PWD/debs.tar" "$3" tmp "$2"
 
-rm -f tmp/etc/resolv.conf
-rm -f tmp/etc/hostname
+rm tmp/etc/resolv.conf
+rm tmp/etc/hostname
 
-rm -f tmp/sbin/init
+test ! -e tmp/sbin/init
 sed < init.template > tmp/sbin/init -e "s,__MIRROR__,$2,g" -e "s,__SUITE__,$3,g"
 chmod 755 tmp/sbin/init
 
