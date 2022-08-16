@@ -4,7 +4,6 @@ KERNEL_OPTS = \
 	-j2
 MIRROR = http://deb.debian.org/debian
 DEBOOTSTRAP_OPTS = \
-	--foreign \
 	--arch armel \
 	--include sudo,firmware-misc-nonfree,isc-dhcp-client,wpasupplicant,ifupdown,udev \
 	--components main,contrib,non-free \
