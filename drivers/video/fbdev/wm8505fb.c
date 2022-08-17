@@ -1,20 +1,11 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  *  WonderMedia WM8505 Frame Buffer device driver
  *
  *  Copyright (C) 2010 Ed Spiridonov <edo.rus@gmail.com>
  *    Based on vt8500lcdfb.c
- *
- * This software is licensed under the terms of the GNU General Public
- * License version 2, as published by the Free Software Foundation, and
- * may be copied, distributed, and modified under those terms.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
  */
 
-#include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
 #include <linux/fb.h>
@@ -46,9 +37,6 @@ struct wm8505fb_info {
 	struct fb_info		fb;
 	void __iomem		*regbase;
 	unsigned int		contrast;
-#ifdef CONFIG_FB_WM8505_VGA
-	struct clk		*clk_dvo;
-#endif
 };
 
 
@@ -71,12 +59,7 @@ static int wm8505fb_init_hw(struct fb_info *info)
 	 * 0x31C sets the correct color mode (RGB565) for WM8650
 	 * Bit 8+9 (0x300) are ignored on WM8505 as reserved
 	 */
-#ifdef CONFIG_FB_WM8505_VGA
-	writel(0x338,		       fbi->regbase + WMT_GOVR_COLORSPACE);
-#else
 	writel(0x31c,		       fbi->regbase + WMT_GOVR_COLORSPACE);
-#endif
-
 	writel(1,		       fbi->regbase + WMT_GOVR_COLORSPACE1);
 
 	/* Virtual buffer size */
@@ -85,13 +68,7 @@ static int wm8505fb_init_hw(struct fb_info *info)
 
 	/* black magic ;) */
 	writel(0xf,		       fbi->regbase + WMT_GOVR_FHI);
-
-#ifdef CONFIG_FB_WM8505_VGA
-	writel(0xe,		       fbi->regbase + WMT_GOVR_DVO_SET);
-#else
 	writel(4,		       fbi->regbase + WMT_GOVR_DVO_SET);
-#endif
-
 	writel(1,		       fbi->regbase + WMT_GOVR_MIF_ENABLE);
 	writel(1,		       fbi->regbase + WMT_GOVR_REG_UPDATE);
 
@@ -118,17 +95,11 @@ static int wm8505fb_set_timing(struct fb_info *info)
 	writel(h_end,   fbi->regbase + WMT_GOVR_TIMING_H_END);
 	writel(h_all,   fbi->regbase + WMT_GOVR_TIMING_H_ALL);
 	writel(h_sync,  fbi->regbase + WMT_GOVR_TIMING_H_SYNC);
-#ifdef CONFIG_FB_WM8505_VGA
-	writel(h_sync,  fbi->regbase + WMT_VGA_TIMING_H_SYNC);
-#endif
 
 	writel(v_start, fbi->regbase + WMT_GOVR_TIMING_V_START);
 	writel(v_end,   fbi->regbase + WMT_GOVR_TIMING_V_END);
 	writel(v_all,   fbi->regbase + WMT_GOVR_TIMING_V_ALL);
 	writel(v_sync,  fbi->regbase + WMT_GOVR_TIMING_V_SYNC);
-#ifdef CONFIG_FB_WM8505_VGA
-	writel(0x1f80,  fbi->regbase + WMT_VGA_TIMING_V_SYNC);
-#endif
 
 	writel(1, fbi->regbase + WMT_GOVR_TG);
 
@@ -142,9 +113,6 @@ static int wm8505fb_set_par(struct fb_info *info)
 
 	if (!fbi)
 		return -EINVAL;
-#ifdef CONFIG_FB_WM8505_VGA
-	clk_set_rate(fbi->clk_dvo, PICOS2KHZ(info->var.pixclock)*1000);
-#endif
 
 	if (info->var.bits_per_pixel == 32) {
 		info->var.red.offset = 16;
@@ -206,7 +174,13 @@ static ssize_t contrast_store(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(contrast, 0644, contrast_show, contrast_store);
+static DEVICE_ATTR_RW(contrast);
+
+static struct attribute *wm8505fb_attrs[] = {
+	&dev_attr_contrast.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(wm8505fb);
 
 static inline u_int chan_to_field(u_int chan, struct fb_bitfield *bf)
 {
@@ -272,7 +246,7 @@ static int wm8505fb_blank(int blank, struct fb_info *info)
 	return 0;
 }
 
-static struct fb_ops wm8505fb_ops = {
+static const struct fb_ops wm8505fb_ops = {
 	.owner		= THIS_MODULE,
 	.fb_set_par	= wm8505fb_set_par,
 	.fb_setcolreg	= wm8505fb_setcolreg,
@@ -300,10 +274,8 @@ static int wm8505fb_probe(struct platform_device *pdev)
 
 	fbi = devm_kzalloc(&pdev->dev, sizeof(struct wm8505fb_info) +
 			sizeof(u32) * 16, GFP_KERNEL);
-	if (!fbi) {
-		dev_err(&pdev->dev, "Failed to initialize framebuffer device\n");
+	if (!fbi)
 		return -ENOMEM;
-	}
 
 	strcpy(fbi->fb.fix.id, DRIVER_NAME);
 
@@ -344,16 +316,6 @@ static int wm8505fb_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-#ifdef CONFIG_FB_WM8505_VGA
-	fbi->clk_dvo = of_clk_get(pdev->dev.of_node, 0);
-	if (IS_ERR(fbi->clk_dvo)) {
-		dev_err(&pdev->dev, "Error getting clock\n");
-		return PTR_ERR(fbi->clk_dvo);
-	}
-
-	clk_prepare_enable(fbi->clk_dvo);
-#endif
-
 	fb_videomode_to_var(&fbi->fb.var, &mode);
 
 	fbi->fb.var.nonstd		= 0;
@@ -377,7 +339,7 @@ static int wm8505fb_probe(struct platform_device *pdev)
 
 	fbi->fb.fix.smem_start		= fb_mem_phys;
 	fbi->fb.fix.smem_len		= fb_mem_len;
-	fbi->fb.screen_base		= fb_mem_virt;
+	fbi->fb.screen_buffer		= fb_mem_virt;
 	fbi->fb.screen_size		= fb_mem_len;
 
 	fbi->contrast = 0x10;
@@ -405,10 +367,6 @@ static int wm8505fb_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	ret = device_create_file(&pdev->dev, &dev_attr_contrast);
-	if (ret < 0)
-		fb_warn(&fbi->fb, "failed to register attributes (%d)\n", ret);
-
 	fb_info(&fbi->fb, "%s frame buffer at 0x%lx-0x%lx\n",
 		fbi->fb.fix.id, fbi->fb.fix.smem_start,
 		fbi->fb.fix.smem_start + fbi->fb.fix.smem_len - 1);
@@ -419,8 +377,6 @@ static int wm8505fb_probe(struct platform_device *pdev)
 static int wm8505fb_remove(struct platform_device *pdev)
 {
 	struct wm8505fb_info *fbi = platform_get_drvdata(pdev);
-
-	device_remove_file(&pdev->dev, &dev_attr_contrast);
 
 	unregister_framebuffer(&fbi->fb);
 
@@ -443,6 +399,7 @@ static struct platform_driver wm8505fb_driver = {
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.of_match_table = wmt_dt_ids,
+		.dev_groups	= wm8505fb_groups,
 	},
 };
 

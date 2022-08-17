@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Input core configuration
 #
@@ -41,8 +42,7 @@ config SERIO_I8042
 
 config SERIO_I8042_DT
 	tristate "i8042 Keyboard controller DT support" if EXPERT || !X86
-	depends on USE_OF
-	select ARCH_MIGHT_HAVE_PC_SERIO
+	depends on USE_OF && ARCH_MIGHT_HAVE_PC_SERIO
 	select SERIO_I8042
 
 config SERIO_SERPORT
@@ -53,7 +53,7 @@ config SERIO_SERPORT
 	  Say Y here if you plan to use an input device (mouse, joystick,
 	  tablet, 6dof) that communicates over the RS232 serial (COM) port.
 
-	  More information is available: <file:Documentation/input/input.txt>
+	  More information is available: <file:Documentation/input/input.rst>
 
 	  If unsure, say Y.
 
@@ -84,7 +84,7 @@ config SERIO_PARKBD
 	  Say Y here if you built a simple parallel port adapter to attach
 	  an additional AT keyboard, XT keyboard or PS/2 mouse.
 
-	  More information is available: <file:Documentation/input/input.txt>
+	  More information is available: <file:Documentation/input/input.rst>
 
 	  If unsure, say N.
 
@@ -101,16 +101,6 @@ config SERIO_RPCKBD
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called rpckbd.
-
-config SERIO_AT32PSIF
-	tristate "AVR32 PSIF PS/2 keyboard and mouse controller"
-	depends on AVR32
-	help
-	  Say Y here if you want to use the PSIF peripheral on AVR32 devices
-	  and connect a PS/2 keyboard and/or mouse to it.
-
-	  To compile this driver as a module, choose M here: the module will
-	  be called at32psif.
 
 config SERIO_AMBAKMI
 	tristate "AMBA KMI keyboard controller"
@@ -180,6 +170,16 @@ config SERIO_MACEPS2
 	  To compile this driver as a module, choose M here: the
 	  module will be called maceps2.
 
+config SERIO_SGI_IOC3
+	tristate "SGI IOC3 PS/2 controller"
+	depends on SGI_MFD_IOC3
+	help
+	  Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
+	  and you want to attach and use a keyboard, mouse, or both.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ioc3kbd.
+
 config SERIO_LIBPS2
 	tristate "PS/2 driver library"
 	depends on SERIO_I8042 || SERIO_I8042=n
@@ -228,7 +228,7 @@ config SERIO_AMS_DELTA
 	tristate "Amstrad Delta (E3) mailboard support"
 	depends on MACH_AMS_DELTA
 	default y
-	---help---
+	help
 	  Say Y here if you have an E3 and want to use its mailboard,
 	  or any standard AT keyboard connected to the mailboard port.
 
@@ -260,7 +260,7 @@ config SERIO_ARC_PS2
 
 config SERIO_APBPS2
 	tristate "GRLIB APBPS2 PS/2 keyboard/mouse controller"
-	depends on OF
+	depends on OF && HAS_IOMEM
 	help
 	  Say Y here if you want support for GRLIB APBPS2 peripherals used
 	  to connect to PS/2 keyboard and/or mouse.
@@ -270,7 +270,7 @@ config SERIO_APBPS2
 
 config SERIO_OLPC_APSP
 	tristate "OLPC AP-SP input support"
-	depends on OLPC || COMPILE_TEST
+	depends on ARCH_MMP || COMPILE_TEST
 	help
 	  Say Y here if you want support for the keyboard and touchpad included
 	  in the OLPC XO-1.75 and XO-4 laptops.
@@ -297,6 +297,17 @@ config SERIO_SUN4I_PS2
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called sun4i-ps2.
+
+config SERIO_GPIO_PS2
+	tristate "GPIO PS/2 bit banging driver"
+	depends on GPIOLIB
+	help
+	  Say Y here if you want PS/2 bit banging support via GPIO.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called ps2-gpio.
+
+	  If you are unsure, say N.
 
 config USERIO
 	tristate "User space serio port driver support"

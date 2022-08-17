@@ -1,12 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Philips UCB1400 GPIO driver
  *
  * Author: Marek Vasut <marek.vasut@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
  */
 
 #include <linux/module.h>
@@ -67,7 +63,7 @@ static int ucb1400_gpio_probe(struct platform_device *dev)
 	ucb->gc.set = ucb1400_gpio_set;
 	ucb->gc.can_sleep = true;
 
-	err = gpiochip_add_data(&ucb->gc, ucb);
+	err = devm_gpiochip_add_data(&dev->dev, &ucb->gc, ucb);
 	if (err)
 		goto err;
 
@@ -90,7 +86,6 @@ static int ucb1400_gpio_remove(struct platform_device *dev)
 			return err;
 	}
 
-	gpiochip_remove(&ucb->gc);
 	return err;
 }
 

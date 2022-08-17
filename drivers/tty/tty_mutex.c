@@ -1,8 +1,10 @@
+// SPDX-License-Identifier: GPL-2.0
 #include <linux/tty.h>
 #include <linux/module.h>
 #include <linux/kallsyms.h>
 #include <linux/semaphore.h>
 #include <linux/sched.h>
+#include "tty.h"
 
 /* Legacy tty mutex glue */
 
@@ -10,7 +12,7 @@
  * Getting the big tty mutex.
  */
 
-void __lockfunc tty_lock(struct tty_struct *tty)
+void tty_lock(struct tty_struct *tty)
 {
 	if (WARN(tty->magic != TTY_MAGIC, "L Bad %p\n", tty))
 		return;
@@ -32,7 +34,7 @@ int tty_lock_interruptible(struct tty_struct *tty)
 	return ret;
 }
 
-void __lockfunc tty_unlock(struct tty_struct *tty)
+void tty_unlock(struct tty_struct *tty)
 {
 	if (WARN(tty->magic != TTY_MAGIC, "U Bad %p\n", tty))
 		return;
@@ -41,13 +43,13 @@ void __lockfunc tty_unlock(struct tty_struct *tty)
 }
 EXPORT_SYMBOL(tty_unlock);
 
-void __lockfunc tty_lock_slave(struct tty_struct *tty)
+void tty_lock_slave(struct tty_struct *tty)
 {
 	if (tty && tty != tty->link)
 		tty_lock(tty);
 }
 
-void __lockfunc tty_unlock_slave(struct tty_struct *tty)
+void tty_unlock_slave(struct tty_struct *tty)
 {
 	if (tty && tty != tty->link)
 		tty_unlock(tty);

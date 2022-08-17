@@ -1,14 +1,13 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * wm8750.dtsi - Device tree file for Wondermedia WM8750 SoC
  *
  * Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- *
- * Licensed under GPLv2 or later
  */
 
-/include/ "skeleton.dtsi"
-
 / {
+	#address-cells = <1>;
+	#size-cells = <1>;
 	compatible = "wm,wm8750";
 
 	cpus {
@@ -19,6 +18,11 @@
 			device_type = "cpu";
 			compatible = "arm,arm1176jzf";
 		};
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x0 0x0>;
 	};
 
 	aliases {
@@ -56,7 +60,7 @@
 		};
 
 		pinctrl: pinctrl@d8110000 {
-			compatible = "wm,wm8750-pinctrl","wm,prizm-pinctrl";
+			compatible = "wm,wm8750-pinctrl";
 			reg = <0xd8110000 0x10000>;
 			interrupt-controller;
 			#interrupt-cells = <2>;
@@ -147,15 +151,6 @@
 					divisor-reg = <0x310>;
 				};
 
-				clkdvo: dvo {
-					#clock-cells = <0>;
-					compatible = "via,vt8500-device-clock";
-					clocks = <&pllc>;
-					divisor-reg = <0x36C>;
-					enable-reg = <0x258>;
-					enable-bit = <30>;
-				};
-
 				clkuart0: uart0 {
 					#clock-cells = <0>;
 					compatible = "via,vt8500-device-clock";
@@ -223,24 +218,6 @@
 					enable-bit = <0>;
 				};
 
-				clksf: sf {
-					#clock-cells = <0>;
-					compatible = "via,vt8500-device-clock";
-					clocks = <&pllb>;
-					divisor-reg = <0x314>;
-					enable-reg = <0x254>;
-					enable-bit = <23>;
-				};
-
-				clknand: nand {
-					#clock-cells = <0>;
-					compatible = "via,vt8500-device-clock";
-					clocks = <&pllb>;
-					divisor-reg = <0x318>;
-					enable-reg = <0x254>;
-					enable-bit = <16>;
-				};
-
 				clki2c0: i2c0clk {
 					#clock-cells = <0>;
 					compatible = "via,vt8500-device-clock";
@@ -259,21 +236,6 @@
 					enable-bit = <9>;
 				};
 			};
-		};
-
-		nand: nand@d8002000 {
-			#address-cells = <1>;
-			#size-cells = <1>;
-			compatible = "wm,wm8750-nand";
-			reg = <0xd8009000 0x400>;
-			clocks = <&clknand>;
-			interrupts = <28 29>;
-		};
-
-		sf@d8002000 {
-			compatible = "wm,wm8505-sf";
-			reg = <0xd8002000 0x400>;
-			clocks = <&clksf>;
 		};
 
 		pwm: pwm@d8220000 {
@@ -363,7 +325,7 @@
 
 		sdhc@d800a000 {
 			compatible = "wm,wm8505-sdhc";
-			reg = <0xd800a000 0x1000>;
+			reg = <0xd800a000 0x400>;
 			interrupts = <20 21>;
 			clocks = <&clksdhc>;
 			bus-width = <4>;
@@ -384,13 +346,6 @@
 			interrupts = <18>;
 			clocks = <&clki2c1>;
 			clock-frequency = <400000>;
-		};
-
-		eth0@d8320000 {
-			compatible = "via,velocity-vt6110";
-			reg = <0xd8004000 0x400>;
-			interrupts = <10>;
-			no-eeprom;
 		};
 	};
 };

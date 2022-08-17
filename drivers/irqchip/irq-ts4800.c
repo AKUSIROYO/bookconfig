@@ -59,7 +59,7 @@ static int ts4800_irqdomain_map(struct irq_domain *d, unsigned int irq,
 	return 0;
 }
 
-struct irq_domain_ops ts4800_ic_ops = {
+static const struct irq_domain_ops ts4800_ic_ops = {
 	.map = ts4800_irqdomain_map,
 	.xlate = irq_domain_xlate_onecell,
 };
@@ -79,10 +79,9 @@ static void ts4800_ic_chained_handle_irq(struct irq_desc *desc)
 
 	do {
 		unsigned int bit = __ffs(status);
-		int irq = irq_find_mapping(data->domain, bit);
 
+		generic_handle_domain_irq(data->domain, bit);
 		status &= ~(1 << bit);
-		generic_handle_irq(irq);
 	} while (status);
 
 out:

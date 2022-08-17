@@ -1,15 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Joshua Henderson, joshua.henderson@microchip.com
  * Copyright (C) 2015 Microchip Technology Inc.  All rights reserved.
- *
- *  This program is free software; you can distribute it and/or modify it
- *  under the terms of the GNU General Public License (Version 2) as
- *  published by the Free Software Foundation.
- *
- *  This program is distributed in the hope it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -29,24 +21,11 @@ const char *get_system_type(void)
 	return "PIC32MZDA";
 }
 
-static ulong get_fdtaddr(void)
-{
-	ulong ftaddr = 0;
-
-	if ((fw_arg0 == -2) && fw_arg1 && !fw_arg2 && !fw_arg3)
-		return (ulong)fw_arg1;
-
-	if (__dtb_start < __dtb_end)
-		ftaddr = (ulong)__dtb_start;
-
-	return ftaddr;
-}
-
 void __init plat_mem_setup(void)
 {
 	void *dtb;
 
-	dtb = (void *)get_fdtaddr();
+	dtb = get_fdt();
 	if (!dtb) {
 		pr_err("pic32: no DTB found.\n");
 		return;
@@ -99,10 +78,6 @@ void __init prom_init(void)
 	pic32_init_cmdline((int)fw_arg0, (char **)fw_arg1);
 }
 
-void __init prom_free_prom_memory(void)
-{
-}
-
 void __init device_tree_init(void)
 {
 	if (!initial_boot_params)
@@ -147,8 +122,7 @@ static int __init plat_of_setup(void)
 		panic("Device tree not present");
 
 	pic32_of_prepare_platform_data(pic32_auxdata_lookup);
-	if (of_platform_populate(NULL, of_default_bus_match_table,
-				 pic32_auxdata_lookup, NULL))
+	if (of_platform_default_populate(NULL, pic32_auxdata_lookup, NULL))
 		panic("Failed to populate DT");
 
 	return 0;
