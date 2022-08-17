@@ -1,7 +1,7 @@
 KERNEL_OPTS = \
 	CROSS_COMPILE=arm-linux-gnueabi- \
 	CFLAGS="-march=armv5te -mtune=arm926ej-s" \
-	-j2
+	-j4
 MIRROR = http://deb.debian.org/debian
 DEBOOTSTRAP_OPTS = \
 	--arch armel \
