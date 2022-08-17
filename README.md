@@ -52,7 +52,7 @@ It sets up the root filesystem with some network-related packages.
 This includes the non-free `firmware-ralink` package.
 
 It sets the LCD contrast on boot.
-Use `/etc/udev/rules.d/99-fb-contrast.rules` to get it the way you like.
+Use `/etc/udev/rules.d/10-display.rules` to get it the way you like.
 
 It has a systemd service `wlgpio` to control the internal USB WiFi adapter.
 Start/stop it to power the adapter on/off.
@@ -71,9 +71,9 @@ Start/stop it to power the adapter on/off.
 ```
 The `kernel` branch is a merge commit whose second parent is the changes rebased on some upstream release, and whose first parent is the previous state of the branch.
 That is, the latest rebase is at `kernel^2`, and the previous rebase is at `kernel~^2`, and so on.
-At the end of following the first parent, you'll reach @linux-wmt's `testing` branch (although I probably should have kept it consistent).
+At the end of following the merge commits' first parents, you'll reach @linux-wmt's `testing` branch.
 
-1. Privately, do `git checkout -b rebase kernel^2`.
+1. Privately, move to a branch without these merge commits, e.g., `git checkout -b k42 kernel^2`.
 2. Fetch an upstream version to rebase onto, e.g., with `git fetch --no-tags upstream v4.2`.
 3. Do the rebase, which I guess you would do by `git rebase FETCH_HEAD`.
 4. Create a new commit to link the history with `git commit-tree -p refs/heads/kernel -p HEAD -m "rebase v4.2" HEAD^{tree}`.
