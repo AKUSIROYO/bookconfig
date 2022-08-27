@@ -51,7 +51,10 @@ rootfs.tar.gz: buildrootfs debs.tar init.template ship libeatmydata1.deb
 debs.tar:
 	fakeroot /usr/sbin/debootstrap $(DEBOOTSTRAP_OPTS) --make-tarball $@ $(SUITE) tmp $(MIRROR)
 
+# tar -xf debs.tar -O var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_binary-armel_Packages | less +/Package:\ libeatmydata1
 libeatmydata1.deb:
-	wget -O $@ $(MIRROR)/pool/main/libe/libeatmydata/libeatmydata1_105-9_armel.deb
+	wget $(MIRROR)/pool/main/libe/libeatmydata/libeatmydata1_105-9_armel.deb
+	echo "8359150286aced8a37ee9a28d0f7824bc28a654ec66a7547cac0c35293f1e3f7  libeatmydata1_105-9_armel.deb" | sha256sum -c -
+	mv libeatmydata1_105-9_armel.deb $@
 
 .PHONY: all menuconfig
