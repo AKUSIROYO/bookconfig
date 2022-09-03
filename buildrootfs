@@ -1,18 +1,11 @@
 #!/bin/sh -eux
 umask 022
 
-/usr/sbin/debootstrap --foreign $DEBOOTSTRAP_OPTS --unpack-tarball "$PWD/debs.tar" "$3" tmp "$2"
+/usr/sbin/multistrap -f multistrap.conf
 
-rm tmp/etc/resolv.conf
-rm tmp/etc/hostname
-
-test ! -e tmp/sbin/init
-sed < init.template > tmp/sbin/init -e "s,__MIRROR__,$2,g" -e "s,__SUITE__,$3,g"
-chmod 755 tmp/sbin/init
-
-dpkg-deb --fsys-tarfile libeatmydata1_105-9_armel.deb | tar -x -C tmp ./usr/lib/arm-linux-gnueabi/libeatmydata.so.1.1.2
-
-cp -r ship/* tmp
+mv tmp/sbin/init tmp/sbin/init.stock
+# fstab based on create_fstab_header from partman-target
+cp -r ship/. tmp
 
 tar -czf "$1" -C tmp .
 rm -rf tmp

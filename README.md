@@ -19,8 +19,7 @@ I build this on Debian unstable, and I have the following packages installed for
 * u-boot-tools
 * zip
 * fakeroot
-* debian-archive-keyring
-* debootstrap
+* multistrap
 
 ## Catalog of everything in this repo
 
@@ -39,17 +38,15 @@ Supposedly, the exact black magic incantation needed here differs from model to 
 
 It builds the root filesystem with the `buildrootfs` script.
 
-The root filesystem is set up with an init script made from `init.template`.
-When you first boot the root filesystem, this script runs the second stage of debootstrap and also sets up a user.
+The root filesystem is set up with an init script `ship/sbin/init`.
+When you first boot the root filesystem, this script configures the packages and also sets up a user.
 
 ## Uncategorized disclosures
-
-It arranges for the second stage of debootstrap to run with eatmydata.
 
 It sets up the system so that there's a user with sudo access, and you can't log in as root.
 
 It sets up the root filesystem with some network-related packages.
-This includes the non-free `firmware-ralink` package.
+This includes the non-free `firmware-misc-nonfree` package.
 
 It sets the LCD contrast on boot.
 Use `/etc/udev/rules.d/10-display.rules` to get it the way you like.

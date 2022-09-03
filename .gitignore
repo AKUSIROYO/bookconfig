@@ -4,7 +4,4 @@
 /zImage_w_dtb
 /script
 /boot.zip
-/*.deb
-/misc.stamp
-/debs.tar
 /rootfs.tar.gz

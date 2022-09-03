@@ -22,7 +22,7 @@ script/uzImage.bin: zImage_w_dtb | script
 
 zImage_w_dtb: config | kernel
 	$(MAKE) -C kernel ARCH=arm KCONFIG_CONFIG=../$< $(KERNEL_OPTS) zImage wm8505-ref.dtb
-	cat kernel/arch/arm/boot/zImage kernel/arch/arm/boot/dts/wm8505-ref.dtb > $@
+	cat kernel/arch/arm/boot/zImage kernel/arch/arm/boot/dts/wm8505-ref.dtb >$@
 
 config: seed | kernel
 	cp $< $@.tmp
@@ -45,17 +45,7 @@ script/scriptcmd: cmd | script
 script:
 	mkdir -p $@
 
-rootfs.tar.gz: export DEBOOTSTRAP_OPTS := $(DEBOOTSTRAP_OPTS)
-rootfs.tar.gz: buildrootfs debs.tar init.template ship misc.stamp
-	fakeroot ./$< $@ $(MIRROR) $(SUITE)
-
-debs.tar:
-	fakeroot /usr/sbin/debootstrap $(DEBOOTSTRAP_OPTS) --make-tarball $@ $(SUITE) tmp $(MIRROR)
-
-# tar -xf debs.tar -O var/lib/apt/lists/deb.debian.org_debian_dists_bullseye_main_binary-armel_Packages | less +/Package:\ libeatmydata1
-misc.stamp: misc-sums.txt
-	wget -c $(MIRROR)/pool/main/libe/libeatmydata/libeatmydata1_105-9_armel.deb
-	sha256sum -c $<
-	touch $@
+rootfs.tar.gz: buildrootfs multistrap.conf ship
+	fakeroot ./$< $@
 
 .PHONY: all menuconfig
