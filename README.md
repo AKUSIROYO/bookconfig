@@ -48,6 +48,8 @@ It sets up the system so that there's a user with sudo access, and you can't log
 It sets up the root filesystem with some network-related packages.
 This includes the non-free `firmware-misc-nonfree` package.
 
+It sets up an NTP client.
+
 It sets the LCD contrast on boot.
 Use `/etc/udev/rules.d/10-display.rules` to get it the way you like.
 
