@@ -28,7 +28,7 @@ And it has the various compilation options for the kernel.
 And it has a list of packages to install in the root filesystem.
 
 There's actually a whole 'nother branch, `kernel`, which is a blind rebase of [@linux-wmt's kernel](https://github.com/linux-wmt/linux-vtwm) onto later mainline kernel releases.
-When you run `make`, it'll clone the kernel branch into a subdirectory, so you better not have cloned all branches, because then you'd end up with two copies of the kernel, and that's bad, because it's really big.
+When you run `make`, it'll check out the kernel branch into a subdirectory.
 
 Some kernel configuration options are in `seed`, which are mostly taken from [@linux-wmt's wiki](https://github.com/linux-wmt/linux-vtwm/wiki/Build-the-source).
 Other options are arbitrary things that I've turned on as I needed, not in any principled way.

@@ -1,4 +1,3 @@
-CLONE_KERNEL_OPTS = --single-branch
 KERNEL_OPTS = \
 	CROSS_COMPILE=arm-linux-gnueabi- \
 	CFLAGS="-march=armv5te -mtune=arm926ej-s" \
@@ -37,7 +36,8 @@ menuconfig: config | kernel
 	mv config.next.tmp config.next
 
 kernel:
-	git clone $(CLONE_KERNEL_OPTS) -b kernel "$(shell git config remote.origin.url)" $@
+	git rev-parse --verify kernel || git fetch $(FETCH_KERNEL_OPTS) origin kernel:kernel
+	git worktree add $@ kernel
 
 script/scriptcmd: cmd | script
 	mkimage -A arm -O linux -T script -C none -a 1 -e 0 -n "script image" -d $< $@
