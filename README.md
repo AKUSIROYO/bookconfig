@@ -1,6 +1,6 @@
 You know, there are these cheap ARM netbooks that can run GNU/Linux.
 I have one with the WM8505 ... um, SoC?
-So here's a repo for putting together other people's hard work into a vaguely bootable set of files, so that you can run Debian bullseye.
+So here's a repo for putting together other people's hard work into a vaguely bootable set of files, so that you can run Debian bookworm.
 This only works for my exact model of netbook, so I think you'll need some tweaks to make it work.
 
 The idea is that you'd run `make`, and it'll create `boot.zip` and `rootfs.tar.gz`.

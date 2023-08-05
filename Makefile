@@ -8,7 +8,7 @@ DEBOOTSTRAP_OPTS = \
 	--include systemd-sysv,sudo,gpiod,firmware-misc-nonfree,network-manager,wpasupplicant,libpam-systemd,udev \
 	--components main,contrib,non-free \
 	--variant minbase
-SUITE = bullseye
+SUITE = bookworm
 
 all: boot.zip rootfs.tar.gz
 
