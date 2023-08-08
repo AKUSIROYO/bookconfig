@@ -19,7 +19,7 @@ EOF
 	mv /sbin/init.stock /sbin/init &&
 
 	/var/lib/dpkg/info/base-passwd.preinst install &&
-	dpkg --configure -a &&
+	DEBIAN_FRONTEND=teletype dpkg --configure -a &&
 
 	read -p "Username for your account: " username &&
 	adduser --gecos "" "$username" &&
