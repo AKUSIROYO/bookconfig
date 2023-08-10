@@ -27,7 +27,7 @@ The `Makefile` describes the high level steps for doing everything.
 And it has the various compilation options for the kernel.
 And it has a list of packages to install in the root filesystem.
 
-There's actually a whole 'nother branch, `kernel`, which is a blind rebase of [@linux-wmt's kernel](https://github.com/linux-wmt/linux-vtwm) onto later mainline kernel releases.
+There's actually a whole 'nother branch, `kernel`, which is a rebase of [@linux-wmt's kernel](https://github.com/linux-wmt/linux-vtwm) onto later longterm kernel releases.
 When you run `make`, it'll check out the kernel branch into a subdirectory.
 
 Some kernel configuration options are in `seed`, which are mostly taken from [@linux-wmt's wiki](https://github.com/linux-wmt/linux-vtwm/wiki/Build-the-source).
