@@ -12,6 +12,7 @@
  *  i740fb by Patrick LERDA, v0.9
  */
 
+#include <linux/aperture.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -159,7 +160,7 @@ static int i740fb_setup_ddc_bus(struct fb_info *info)
 {
 	struct i740fb_par *par = info->par;
 
-	strlcpy(par->ddc_adapter.name, info->fix.id,
+	strscpy(par->ddc_adapter.name, info->fix.id,
 		sizeof(par->ddc_adapter.name));
 	par->ddc_adapter.owner		= THIS_MODULE;
 	par->ddc_adapter.class		= I2C_CLASS_DDC;
@@ -662,6 +663,9 @@ static int i740fb_decode_var(const struct fb_var_screeninfo *var,
 
 static int i740fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 {
+	if (!var->pixclock)
+		return -EINVAL;
+
 	switch (var->bits_per_pixel) {
 	case 8:
 		var->red.offset	= var->green.offset = var->blue.offset = 0;
@@ -745,7 +749,7 @@ static int i740fb_set_par(struct fb_info *info)
 	if (i)
 		return i;
 
-	memset(info->screen_base, 0, info->screen_size);
+	memset_io(info->screen_base, 0, info->screen_size);
 
 	vga_protect(par);
 
@@ -1009,6 +1013,10 @@ static int i740fb_probe(struct pci_dev *dev, const struct pci_device_id *ent)
 	int ret, tmp;
 	bool found = false;
 	u8 *edid;
+
+	ret = aperture_remove_conflicting_pci_devices(dev, "i740fb");
+	if (ret)
+		return ret;
 
 	info = framebuffer_alloc(sizeof(struct i740fb_par), &(dev->dev));
 	if (!info)

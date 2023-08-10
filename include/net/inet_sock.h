@@ -249,6 +249,10 @@ struct inet_sock {
 	__be32			mc_addr;
 	struct ip_mc_socklist __rcu	*mc_list;
 	struct inet_cork_full	cork;
+	struct {
+		__u16 lo;
+		__u16 hi;
+	}			local_port_range;
 };
 
 #define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
@@ -388,6 +392,18 @@ static inline bool inet_can_nonlocal_bind(struct net *net,
 {
 	return READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind) ||
 		inet->freebind || inet->transparent;
+}
+
+static inline bool inet_addr_valid_or_nonlocal(struct net *net,
+					       struct inet_sock *inet,
+					       __be32 addr,
+					       int addr_type)
+{
+	return inet_can_nonlocal_bind(net, inet) ||
+		addr == htonl(INADDR_ANY) ||
+		addr_type == RTN_LOCAL ||
+		addr_type == RTN_MULTICAST ||
+		addr_type == RTN_BROADCAST;
 }
 
 #endif	/* _INET_SOCK_H */
