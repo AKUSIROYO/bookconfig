@@ -11,7 +11,7 @@ jobs:
           multistrap
       - run: make FETCH_KERNEL_OPTS='--depth 1'
       - run: |
-          mkdir upload && mv boot.zip upload
+          mkdir upload && mv boot.zip upload && mv rootfs.tar.gz upload
       - uses: actions/upload-artifact@v3
         with:
           name: artifact
